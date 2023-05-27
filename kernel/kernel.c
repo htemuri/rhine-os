@@ -50,8 +50,8 @@ size_t strlen(const char* str)
     return len;
 }
 
-static const size_t VGA_WIDTH = 80;
-static const size_t VGA_HEIGHT = 25;
+static const size_t VGA_WIDTH = 10;
+static const size_t VGA_HEIGHT = 10;
 
 size_t terminal_row;
 size_t terminal_column;
@@ -85,6 +85,11 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
 
 void terminal_putchar(char c)
 {
+
+    // allow for new line support
+    
+
+
     terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
     if (++terminal_column == VGA_WIDTH) {
         terminal_column = 0;
