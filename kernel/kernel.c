@@ -50,8 +50,8 @@ size_t strlen(const char* str)
     return len;
 }
 
-static const size_t VGA_WIDTH = 10;
-static const size_t VGA_HEIGHT = 10;
+static const size_t VGA_WIDTH = 80;
+static const size_t VGA_HEIGHT = 25;
 
 size_t terminal_row;
 size_t terminal_column;
@@ -83,25 +83,40 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
     terminal_buffer[index] = vga_entry(c, color);
 }
 
+size_t check_special(char c)
+{
+    // new line
+    if (c == '\n') {
+        terminal_row++;
+        terminal_column = 0;
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
 void terminal_putchar(char c)
 {
 
-    // allow for new line support
-    
-
+    // Check for special characters
+    if (check_special(c) == 0) {
+        return;
+    }
 
     terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
     if (++terminal_column == VGA_WIDTH) {
         terminal_column = 0;
-        if (++terminal_row == VGA_HEIGHT)
+        if (++terminal_row == VGA_HEIGHT) {
             terminal_row = 0;
+        }
     }
+        
 }
-
 void terminal_write(const char* data, size_t size)
 {
-    for (size_t i = 0; i < size; i++)
+    for (size_t i = 0; i < size; i++) {
         terminal_putchar(data[i]);
+    }
 }
 
 void terminal_writestring(const char* data)
@@ -114,6 +129,5 @@ void kernel_main(void)
     /* Initialize terminal interface */
     terminal_initialize();
 
-    /* Newline support is left as an exercise. */
-    terminal_writestring("Hello, kernel World!\n");
+    terminal_writestring("testing. \nnew line");
 }

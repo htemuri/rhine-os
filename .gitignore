@@ -1,0 +1,5 @@
+
+# ignore cross compiler
+opt/*
+# ignore binutils and gcc build 
+src/*
