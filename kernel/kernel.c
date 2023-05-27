@@ -83,35 +83,60 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
     terminal_buffer[index] = vga_entry(c, color);
 }
 
+void scroll()
+{
+    // loop through rows
+    // this buffer line = next buffer line
+    //
+    for (size_t i = 0; i < VGA_HEIGHT; i++) {
+        for (size_t j = 0; j < VGA_WIDTH; j++) {
+            terminal_buffer[i*VGA_WIDTH + j] = terminal_buffer[(i+1)*VGA_WIDTH + j + VGA_WIDTH];
+        }
+    }
+    terminal_row--;
+}
 size_t check_special(char c)
 {
     // new line
     if (c == '\n') {
         terminal_row++;
         terminal_column = 0;
+        // if (terminal_row == VGA_WIDTH) {
+        //     scroll();
+        // }
         return 0;
     } else {
         return 1;
     }
 }
 
+
 void terminal_putchar(char c)
 {
-
-    // Check for special characters
-    if (check_special(c) == 0) {
-        return;
-    }
-
-    terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
-    if (++terminal_column == VGA_WIDTH) {
+    if (terminal_row + 1 == VGA_HEIGHT) {
+        scroll();
+        terminal_row --;
         terminal_column = 0;
-        if (++terminal_row == VGA_HEIGHT) {
-            terminal_row = 0;
+    } 
+
+    if (c == '\n') {
+        terminal_row++;
+        terminal_column = 0;
+    } else {
+        unsigned char uc = c;
+        terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
+        // Check for special characters
+        //if (check_special(c) == 1) {
+        //   
+        //}
+        if (++terminal_column == VGA_WIDTH) {
+            terminal_column = 0;
+            terminal_row++;
         }
     }
-        
+
 }
+
 void terminal_write(const char* data, size_t size)
 {
     for (size_t i = 0; i < size; i++) {
@@ -124,10 +149,21 @@ void terminal_writestring(const char* data)
     terminal_write(data, strlen(data));
 }
 
+void terminal_newline()
+{
+    terminal_row++;
+    terminal_column = 0;
+}
+
 void kernel_main(void)
 {
     /* Initialize terminal interface */
     terminal_initialize();
-
-    terminal_writestring("testing. \nnew line");
+    size_t x = 0;
+    while (x<25) {
+        terminal_writestring("first line\n");
+        terminal_writestring("second line\n");
+        terminal_writestring("test\n");
+        x++;
+    }
 }
