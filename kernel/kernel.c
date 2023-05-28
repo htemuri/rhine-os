@@ -85,9 +85,6 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
 
 void scroll()
 {
-    // loop through rows
-    // this buffer line = next buffer line
-    //
     for (size_t i = 0; i < VGA_HEIGHT; i++) {
         for (size_t j = 0; j < VGA_WIDTH; j++) {
             terminal_buffer[i*VGA_WIDTH + j] = terminal_buffer[(i+1)*VGA_WIDTH + j + VGA_WIDTH];
@@ -101,9 +98,6 @@ size_t check_special(char c)
     if (c == '\n') {
         terminal_row++;
         terminal_column = 0;
-        // if (terminal_row == VGA_WIDTH) {
-        //     scroll();
-        // }
         return 0;
     } else {
         return 1;
@@ -125,10 +119,6 @@ void terminal_putchar(char c)
     } else {
         unsigned char uc = c;
         terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
-        // Check for special characters
-        //if (check_special(c) == 1) {
-        //   
-        //}
         if (++terminal_column == VGA_WIDTH) {
             terminal_column = 0;
             terminal_row++;
@@ -160,10 +150,15 @@ void kernel_main(void)
     /* Initialize terminal interface */
     terminal_initialize();
     size_t x = 0;
-    while (x<25) {
+    while (x<50) {
         terminal_writestring("first line\n");
+        terminal_setcolor(VGA_COLOR_CYAN);
         terminal_writestring("second line\n");
-        terminal_writestring("test\n");
+        terminal_setcolor(VGA_COLOR_GREEN);
+        terminal_writestring("third line\n");
+        terminal_setcolor(VGA_COLOR_WHITE);
+
         x++;
     }
+
 }
